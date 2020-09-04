@@ -1,7 +1,9 @@
 import React, { useRef, useEffect } from "react";
-import io from "socket.io-client";
+import socketIOClient from "socket.io-client";
+const ENDPOINT = "https://screen-be.herokuapp.com/";
 
 const Room = (props) => {
+    const userVideo = useRef();
     const partnerVideo = useRef();
     const peerRef = useRef();
     const socketRef = useRef();
@@ -11,9 +13,10 @@ const Room = (props) => {
 
     useEffect(() => {
         navigator.mediaDevices.getUserMedia({ audio: false, video: true }).then(stream => {
+            userVideo.current.srcObject = stream;
             userStream.current = stream;
 
-            socketRef.current = io.connect("/");
+            socketRef.current = socketIOClient(ENDPOINT);
             socketRef.current.emit("join room", props.match.params.roomID);
 
             socketRef.current.on('other user', userID => {
@@ -39,16 +42,11 @@ const Room = (props) => {
 
         function createPeer(userID) {
             const peer = new RTCPeerConnection({
-                iceServers: [
-                    {
-                        urls: "stun:stun.stunprotocol.org"
-                    },
-                    {
-                        urls: 'turn:numb.viagenie.ca',
-                        credential: 'muazkh',
-                        username: 'webrtc@live.com'
-                    },
-                ]
+                iceServers: [{
+                    url: "stun:stun.services.mozilla.com",
+                    username: "somename",
+                    credential: "somecredentials"
+                }]
             });
     
             peer.onicecandidate = handleICECandidateEvent;
@@ -130,6 +128,7 @@ const Room = (props) => {
 
     return (
         <div>
+            <video controls style={{height: 500, width: 500}} autoPlay ref={userVideo} />
             <video controls style={{height: 500, width: 500}} autoPlay ref={partnerVideo} />
             <button onClick={shareScreen}>Share screen</button>
         </div>
