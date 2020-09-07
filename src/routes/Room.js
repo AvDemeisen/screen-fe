@@ -118,6 +118,7 @@ const Room = (props) => {
 
     function shareScreen() {
         navigator.mediaDevices.getDisplayMedia({ cursor: true }).then(stream => {
+            partnerVideo.current.srcObject = stream;
             const screenTrack = stream.getTracks()[0];
             senders.current.find(sender => sender.track.kind === 'video').replaceTrack(screenTrack);
             screenTrack.onended = function() {
@@ -130,7 +131,7 @@ const Room = (props) => {
         <div>
             <video controls style={{height: 500, width: 500}} autoPlay ref={userVideo} />
             <video controls style={{height: 500, width: 500}} autoPlay ref={partnerVideo} />
-            <button onClick={shareScreen}>Share screen</button>
+            <button onClick={() => shareScreen()}>Share screen</button>
         </div>
     );
 };
