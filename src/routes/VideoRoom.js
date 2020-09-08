@@ -29,7 +29,7 @@ const VideoRoom = (props) => {
 
     useEffect(() => {
         socketRef.current = socketIOClient(ENDPOINT);
-        navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(stream => {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
             userVideo.current.srcObject = stream;
             socketRef.current.emit("join room", roomID);
             socketRef.current.on("all users", users => {
