@@ -18,6 +18,12 @@ const StyledVideo = styled.video`
     width: 50%;
 `;
 
+const videoConstraints = {
+    height: window.innerHeight / 2,
+    width: window.innerWidth / 2
+};
+
+
 const Video = (props) => {
     const ref = useRef();
 
@@ -41,7 +47,7 @@ const Room = (props) => {
 
     useEffect(() => {
         socketRef.current = socketIOClient(ENDPOINT);
-        navigator.mediaDevices.getDisplayMedia({ cursor: true }).then(stream => {
+        navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: true }).then(stream => {
             userVideo.current.srcObject = stream;
             socketRef.current.emit("join room", roomID);
             socketRef.current.on("all users", users => {
